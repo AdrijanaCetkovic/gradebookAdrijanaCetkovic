@@ -1,0 +1,32 @@
+{
+    "navigation":{
+        "loginBtn":":nth-child(1) > .nav-link",
+        "registerBtn":":nth-child(2) > .nav-link",
+        "gradebooks":":nth-child(3) > .nav-link",
+        "allProfesors":":nth-child(4) > .nav-link",
+        "addGradebook":":nth-child(5) > .nav-link",
+        "addProfessorbtn":":nth-child(6) > .nav-link",
+        "myGradebook":":nth-child(7) > .nav-link",
+        "naslov":"h4"
+    },
+    "register":{
+        "firstName":"#first_name",
+        "lastName":"#last_name",
+        "email":"#email",
+        "password":"#password",
+        "passwordConfirm":"#password_confirmation",
+        "Check": ".custom-control-label",
+        "register":".btn"
+     },
+     "login":{
+         "email":"#email",
+         "password":"#userPassword",
+         "loginL":".btn"
+     },
+     "addProfesor":{
+         "professorName":"#input-default",
+         "professorLastName":"#input-default1",
+         "submit":".btn-secondary"
+     }
+     
+}

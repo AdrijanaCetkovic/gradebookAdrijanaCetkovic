@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "fd155095-405c-4141-9a0d-1b9ab069401c",
+		"name": "GradebookAdrijanaCetkovic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var email = \"adrijatik1984\"+_.random(1,10000)+\"@gmail.com\"",
+							"pm.environment.set(\"email\", email);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response time is less than 400ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(400);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirmation\": \"{{password_confirmation}}\",\n    \"terms_conditions\": \"{{terms_conditions}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200, user is logged in. \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\", jsonData.token);",
+							"",
+							"",
+							"tests[\"token = \" + jsonData.token] = typeof jsonData.token != 'undefined';",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"var nameGradebook=jsonData.name;",
+							"var profesorID=jsonData.professor_id;",
+							"var gradebookID=jsonData.id;",
+							"pm.environment.set(\"nameGradebook\", nameGradebook);",
+							"pm.environment.set(\"profesorID\", profesorID);",
+							"pm.environment.set(\"gradebookID\", gradebookID);",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"var gradebookNameEnv=pm.environment.get(\"nameGradebook\");",
+							"var profesorIDEnv=pm.environment.get(\"profesorID\");",
+							"pm.test(\"Checking gradebookName and profesorID \", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(gradebookNameEnv);",
+							"    pm.expect(jsonData.professor_id).to.eql(profesorIDEnv);",
+							"    ",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{nameGradebook}}\",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook with 1 char",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"a\",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook with 256 char Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"var nameGradebook=jsonData.name;",
+							"var profesorID=jsonData.professor_id;",
+							"var gradebookID=jsonData.id;",
+							"pm.environment.set(\"nameGradebook\", nameGradebook);",
+							"pm.environment.set(\"profesorID\", profesorID);",
+							"pm.environment.set(\"gradebookID\", gradebookID);",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"var gradebookNameEnv=pm.environment.get(\"nameGradebook\");",
+							"var profesorIDEnv=pm.environment.get(\"profesorID\");",
+							"pm.test(\"Checking gradebookName and profesorID \", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(gradebookNameEnv);",
+							"    pm.expect(jsonData.professor_id).to.eql(profesorIDEnv);",
+							"    ",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"P2,k]jcyrV,eA}NGd!QrPWf.$g(&4j,GLFvT7m/4TJu9-F*aieq@=r]y_Ry5N[KJHrbgfU.g9pSFrTMg}yj5X=B5h9e*{iLH8*4RKRBV++RfG3pThxnZ.pEBQiD&v3}bqPg3n%W.Q:W&[TTfW+=2%;pXn=Hy@L9mBV]tu!i_L{LYgSHdUc:$@M,k$ZM/8UW[y!&J9Yn(:yE/j3/q[QV94Jqxv8/kAf+.M(j[C!4d+4{.VTaW4&N=%x9x-}vK6D4N\",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"\",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook with spaces",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \" \",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook with not exicting proffesor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{nameGradebook}}\",\n    \"professor_id\": 555\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create gradebook without token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {",
+							"    pm.response.to.have.status(422);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{nameGradebook}}\",\n    \"professor_id\": {{profesorID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/gradebooks/store",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"gradebooks",
+						"store"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
